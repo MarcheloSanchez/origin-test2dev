@@ -1,0 +1,26 @@
+# --- OS / Editor junk ---
+.DS_Store
+Thumbs.db
+desktop.ini
+Icon?
+*.swp
+*.swo
+*.tmp
+~$*
+
+# --- Obsidian: device/personal state (ignore) ---
+.obsidian/cache/
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/appearance.json
+.obsidian/graph.json
+.obsidian/obsidian-sync.json
+
+# Local History plugin (huge & per-device)
+.obsidian/plugins/obsidian-local-history/
+
+# Plugin settings may contain tokens; keep plugin code/manifest, ignore settings
+.obsidian/plugins/*/data.json
+
+# Obsidian trash
+.trash/
