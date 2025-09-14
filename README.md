@@ -1,13 +1,13 @@
 # Inbox Processing
 
 1. **Review Daily**
-   - Open `00-Inbox`.
+   - Open `+` (Inbox).
    - Process each note using Capture and Clarify playbooks.
 2. **Decide**
-   - Project → move to `01 📂 PARA/Projects`.
-   - Area → move to `01 📂 PARA/Areas`.
-   - Resource → move to `01 📂 PARA/Resources`.
-   - Zettel → move to `02 🧠 Zettelkasten` with UID.
+   - Project → move to `02-PARA/100-PROJECTS`.
+   - Area → move to `02-PARA/200-AREAS`.
+   - Resource → move to `02-PARA/300-RESOURCES`.
+   - Zettel → move to `02-PARA/300-RESOURCES/310 Knowledge/Dots` with UID.
    - Trash or archive if unnecessary.
 3. **Add Metadata**
    - Apply templates.
