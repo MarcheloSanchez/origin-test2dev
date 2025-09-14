@@ -1,0 +1,63 @@
+filters:
+  and:
+    - file.folder.startsWith("03-Efforts")
+views:
+  - type: table
+    name: PROJECTS
+    order:
+      - file.name
+      - rank
+      - file.folder
+      - up
+      - related
+      - file.links
+    sort:
+      - property: file.folder
+        direction: ASC
+      - property: rank
+        direction: DESC
+    columnSize:
+      file.name: 318
+      file.folder: 229
+  - type: table
+    name: Active Projects
+    filters:
+      and:
+        - file.inFolder("03-Efforts/On")
+    order:
+      - file.name
+      - rank
+      - up
+      - related
+      - file.links
+    sort:
+      - property: rank
+        direction: DESC
+  - type: table
+    name: Simmering Projects
+    filters:
+      and:
+        - file.inFolder("03-Efforts/Simmering")
+    order:
+      - file.name
+      - rank
+      - up
+      - related
+      - file.links
+    sort:
+      - property: rank
+        direction: DESC
+  - type: table
+    name: Sleeping Projects
+    filters:
+      and:
+        - file.inFolder("03-Efforts/Sleeping")
+    order:
+      - file.name
+      - rank
+      - up
+      - related
+      - file.links
+    sort:
+      - property: rank
+        direction: DESC

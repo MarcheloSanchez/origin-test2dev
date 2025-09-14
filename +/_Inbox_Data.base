@@ -1,0 +1,61 @@
+filters:
+  or:
+    - file.inFolder("00-Inbox")
+views:
+  - type: table
+    name: INBOX
+    order:
+      - file.name
+      - Created
+      - title
+      - status
+      - tags
+      - processing_priority
+      - estimated_effort
+      - capture_method
+      - maturity
+      - related
+      - type
+      - fileClass
+    sort: []
+    columnSize:
+      file.name: 271
+      note.title: 164
+  - type: table
+    name: INBOX 2
+    order:
+      - file.name
+      - Created
+      - title
+      - status
+      - tags
+      - processing_priority
+      - estimated_effort
+      - capture_method
+      - maturity
+      - related
+      - type
+      - fileClass
+    sort: []
+    columnSize:
+      file.name: 271
+      note.title: 164
+  - type: table
+    name: INBOX 2 2
+    order:
+      - file.name
+      - Created
+      - title
+      - status
+      - tags
+      - processing_priority
+      - estimated_effort
+      - capture_method
+      - maturity
+      - related
+      - type
+      - fileClass
+    sort: []
+    columnSize:
+      file.name: 271
+      note.title: 164

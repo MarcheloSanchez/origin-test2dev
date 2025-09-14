@@ -1,0 +1,3 @@
+ >Templates, Checklists, Prompts, Rubrics
+
+The **Workflows** folder contains your standardized procedures, templates, and checklists – essentially the _operational playbooks_ that guide repeated tasks. This could include writing templates, meeting agendas, project kick-off checklists, journaling prompts, rubrics, etc. Storing these in one folder makes them easy to find and reuse whenever needed (especially with Obsidian’s template features).

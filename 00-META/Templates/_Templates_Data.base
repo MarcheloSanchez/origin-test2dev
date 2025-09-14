@@ -1,0 +1,10 @@
+filters:
+  and:
+    - file.folder.contains("Templates")
+views:
+  - type: cards
+    name: Templates
+    filters:
+      and:
+        - file.folder.startsWith("Templates")
+        - '!file.folder.startsWith("Templates/TemplateR")'

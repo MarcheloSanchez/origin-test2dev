@@ -1,0 +1,26 @@
+{
+  "order": {
+    "default": [
+      "up","in","x",
+      "title","aliases","fileClass","cssclass","type",
+      "status","maturity","processing_priority",
+      "tags",
+      "created","modified","last_review","review_frequency","due","start","end",
+      "estimated_effort","completeness","coverage_areas","linked_notes_count","capture_method",
+      "related","see_also","related_concepts","related_ideas",
+      "role","org","company","email","phone","website","twitter","github","linkedin"
+    ]
+  },
+  "enums": {
+    "status": ["inbox","active","waiting","completed","archived"]
+  },
+  "toArray": ["tags","aliases"],
+  "dateKeys": ["created","modified","last_review","review_frequency","due","start","end"],
+  "rules": {
+    "tags": { "stripHashes": true, "lowerCase": false, "sort": true, "dedupe": true, "trim": true },
+    "aliases": { "dedupe": true, "sort": false, "trim": true },
+    "rename": { "seeAlso": "see_also", "relatedNotes": "related" },
+    "ensureRequired": ["title","type","status","created"],
+    "removeEmpty": true
+  }
+}

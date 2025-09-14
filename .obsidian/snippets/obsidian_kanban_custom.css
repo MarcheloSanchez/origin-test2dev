@@ -1,0 +1,349 @@
+/* ==========================================================================
+   OBSIDIAN KANBAN BOARD CSS CUSTOMIZATION
+   Complete styling solution for PKM systems
+   ========================================================================== */
+
+/* Base Variables - Light Theme */
+body.theme-light {
+  --kanban-bg-primary: #ffffff;
+  --kanban-bg-secondary: #f8f9fa;
+  --kanban-bg-hover: #e9ecef;
+  --kanban-text-primary: #212529;
+  --kanban-text-secondary: #6c757d;
+  --kanban-text-muted: #adb5bd;
+  --kanban-border: #dee2e6;
+  --kanban-shadow: rgba(0, 0, 0, 0.1);
+
+  /* Column Colors for PKM Workflow */
+  --kanban-col-inbox: 255, 107, 107;      /* Red - Capture */
+  --kanban-col-process: 76, 175, 80;      /* Green - Processing */
+  --kanban-col-research: 33, 150, 243;    /* Blue - Research */
+  --kanban-col-develop: 255, 193, 7;      /* Yellow - Development */
+  --kanban-col-review: 156, 39, 176;      /* Purple - Review */
+  --kanban-col-archive: 96, 125, 139;     /* Grey - Archive */
+}
+
+/* Base Variables - Dark Theme */
+body.theme-dark {
+  --kanban-bg-primary: #2d3748;
+  --kanban-bg-secondary: #1a202c;
+  --kanban-bg-hover: #4a5568;
+  --kanban-text-primary: #e2e8f0;
+  --kanban-text-secondary: #a0aec0;
+  --kanban-text-muted: #718096;
+  --kanban-border: #4a5568;
+  --kanban-shadow: rgba(0, 0, 0, 0.3);
+
+  /* Darker column colors for dark theme */
+  --kanban-col-inbox: 239, 68, 68;
+  --kanban-col-process: 72, 187, 120;
+  --kanban-col-research: 66, 153, 225;
+  --kanban-col-develop: 236, 201, 75;
+  --kanban-col-review: 183, 148, 244;
+  --kanban-col-archive: 113, 128, 150;
+}
+
+/* ==========================================================================
+   KANBAN BOARD LAYOUT
+   ========================================================================== */
+
+/* Board Container */
+.kanban-plugin__board {
+  background: var(--kanban-bg-secondary);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 8px 0;
+}
+
+/* Lane Styling */
+.kanban-plugin__lane {
+  background: var(--kanban-bg-primary);
+  border: 1px solid var(--kanban-border);
+  border-radius: 8px;
+  margin: 0 8px;
+  min-width: 280px;
+  box-shadow: 0 2px 4px var(--kanban-shadow);
+  transition: all 0.2s ease;
+}
+
+.kanban-plugin__lane:hover {
+  box-shadow: 0 4px 8px var(--kanban-shadow);
+  transform: translateY(-2px);
+}
+
+/* Lane Headers */
+.kanban-plugin__lane-header-wrapper {
+  border-bottom: 2px solid var(--kanban-border);
+  padding: 12px 16px;
+  background: var(--kanban-bg-secondary);
+  border-radius: 8px 8px 0 0;
+}
+
+.kanban-plugin__lane-title-text {
+  font-weight: 600;
+  font-size: 1.1em;
+  color: var(--kanban-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   CARD STYLING
+   ========================================================================== */
+
+/* Card Base */
+.kanban-plugin__item {
+  background: var(--kanban-bg-primary);
+  border: 1px solid var(--kanban-border);
+  border-radius: 6px;
+  margin: 8px 0;
+  padding: 12px;
+  box-shadow: 0 1px 3px var(--kanban-shadow);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.kanban-plugin__item:hover {
+  box-shadow: 0 4px 8px var(--kanban-shadow);
+  transform: translateY(-1px);
+  border-color: var(--interactive-accent);
+}
+
+/* Card Content */
+.kanban-plugin__item-markdown {
+  color: var(--kanban-text-primary);
+  line-height: 1.5;
+}
+
+.kanban-plugin__item-markdown h1,
+.kanban-plugin__item-markdown h2,
+.kanban-plugin__item-markdown h3 {
+  color: var(--kanban-text-primary);
+  margin-top: 0;
+}
+
+/* Completed Cards */
+.kanban-plugin__item.is-complete {
+  opacity: 0.7;
+  background: var(--kanban-bg-secondary);
+}
+
+.kanban-plugin__item.is-complete .kanban-plugin__item-markdown {
+  text-decoration: line-through;
+  color: var(--kanban-text-muted);
+}
+
+/* ==========================================================================
+   COLUMN-SPECIFIC COLORS FOR PKM WORKFLOW
+   ========================================================================== */
+
+/* Inbox Column (Red) */
+.kanban-plugin__lane-wrapper:nth-child(1) .kanban-plugin__lane {
+  border-left: 4px solid rgb(var(--kanban-col-inbox));
+}
+
+.kanban-plugin__lane-wrapper:nth-child(1) .kanban-plugin__lane-header-wrapper {
+  background: rgba(var(--kanban-col-inbox), 0.1);
+}
+
+/* Processing Column (Green) */
+.kanban-plugin__lane-wrapper:nth-child(2) .kanban-plugin__lane {
+  border-left: 4px solid rgb(var(--kanban-col-process));
+}
+
+.kanban-plugin__lane-wrapper:nth-child(2) .kanban-plugin__lane-header-wrapper {
+  background: rgba(var(--kanban-col-process), 0.1);
+}
+
+/* Research Column (Blue) */
+.kanban-plugin__lane-wrapper:nth-child(3) .kanban-plugin__lane {
+  border-left: 4px solid rgb(var(--kanban-col-research));
+}
+
+.kanban-plugin__lane-wrapper:nth-child(3) .kanban-plugin__lane-header-wrapper {
+  background: rgba(var(--kanban-col-research), 0.1);
+}
+
+/* Development Column (Yellow) */
+.kanban-plugin__lane-wrapper:nth-child(4) .kanban-plugin__lane {
+  border-left: 4px solid rgb(var(--kanban-col-develop));
+}
+
+.kanban-plugin__lane-wrapper:nth-child(4) .kanban-plugin__lane-header-wrapper {
+  background: rgba(var(--kanban-col-develop), 0.1);
+}
+
+/* Review Column (Purple) */
+.kanban-plugin__lane-wrapper:nth-child(5) .kanban-plugin__lane {
+  border-left: 4px solid rgb(var(--kanban-col-review));
+}
+
+.kanban-plugin__lane-wrapper:nth-child(5) .kanban-plugin__lane-header-wrapper {
+  background: rgba(var(--kanban-col-review), 0.1);
+}
+
+/* Archive Column (Grey) */
+.kanban-plugin__lane-wrapper:nth-child(6) .kanban-plugin__lane {
+  border-left: 4px solid rgb(var(--kanban-col-archive));
+}
+
+.kanban-plugin__lane-wrapper:nth-child(6) .kanban-plugin__lane-header-wrapper {
+  background: rgba(var(--kanban-col-archive), 0.1);
+}
+
+/* ==========================================================================
+   INTERACTIVE ELEMENTS
+   ========================================================================== */
+
+/* Add Card Button */
+.kanban-plugin__new-item-button {
+  background: transparent;
+  border: 2px dashed var(--kanban-border);
+  color: var(--kanban-text-secondary);
+  border-radius: 6px;
+  padding: 12px;
+  margin: 8px 0;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.kanban-plugin__new-item-button:hover {
+  background: var(--kanban-bg-hover);
+  border-color: var(--interactive-accent);
+  color: var(--kanban-text-primary);
+}
+
+/* Settings Button */
+.kanban-plugin__lane-settings-button {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.kanban-plugin__lane:hover .kanban-plugin__lane-settings-button {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   PRIORITY INDICATORS
+   ========================================================================== */
+
+/* High Priority Cards */
+.kanban-plugin__item:has(.tag[href="#high-priority"]) {
+  border-left: 4px solid #dc3545;
+  background: linear-gradient(90deg, rgba(220, 53, 69, 0.1) 0%, var(--kanban-bg-primary) 8px);
+}
+
+/* Medium Priority Cards */
+.kanban-plugin__item:has(.tag[href="#medium-priority"]) {
+  border-left: 4px solid #ffc107;
+  background: linear-gradient(90deg, rgba(255, 193, 7, 0.1) 0%, var(--kanban-bg-primary) 8px);
+}
+
+/* Low Priority Cards */
+.kanban-plugin__item:has(.tag[href="#low-priority"]) {
+  border-left: 4px solid #28a745;
+  background: linear-gradient(90deg, rgba(40, 167, 69, 0.1) 0%, var(--kanban-bg-primary) 8px);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .kanban-plugin__lane {
+    min-width: 250px;
+    margin: 0 4px;
+  }
+
+  .kanban-plugin__item {
+    padding: 8px;
+  }
+
+  .kanban-plugin__lane-header-wrapper {
+    padding: 8px 12px;
+  }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY ENHANCEMENTS
+   ========================================================================== */
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .kanban-plugin__item {
+    border-width: 2px;
+  }
+
+  .kanban-plugin__lane-title-text {
+    font-weight: 700;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .kanban-plugin__item,
+  .kanban-plugin__lane,
+  .kanban-plugin__new-item-button {
+    transition: none;
+  }
+}
+
+/* ==========================================================================
+   PRINT STYLES
+   ========================================================================== */
+
+@media print {
+  .kanban-plugin__board {
+    background: white;
+    box-shadow: none;
+  }
+
+  .kanban-plugin__lane {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+
+  .kanban-plugin__item {
+    box-shadow: none;
+    border: 1px solid #000;
+  }
+}
+
+/* ==========================================================================
+   CUSTOM ANIMATIONS
+   ========================================================================== */
+
+/* Card entrance animation */
+@keyframes cardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.kanban-plugin__item {
+  animation: cardSlideIn 0.3s ease-out;
+}
+
+/* Lane hover glow effect */
+@keyframes laneGlow {
+  0% {
+    box-shadow: 0 2px 4px var(--kanban-shadow);
+  }
+  50% {
+    box-shadow: 0 4px 8px var(--kanban-shadow), 0 0 0 1px var(--interactive-accent);
+  }
+  100% {
+    box-shadow: 0 2px 4px var(--kanban-shadow);
+  }
+}
+
+.kanban-plugin__lane:focus-within {
+  animation: laneGlow 2s ease-in-out;
+}

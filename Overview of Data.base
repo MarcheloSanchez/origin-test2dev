@@ -1,0 +1,69 @@
+views:
+  - type: table
+    name: ALL
+    order:
+      - file.name
+      - status
+      - tags
+      - up
+      - file.tags
+      - type
+      - related
+      - file.folder
+      - file.ctime
+    sort:
+      - property: file.ctime
+        direction: DESC
+    limit: 100
+    columnSize:
+      note.tags: 120
+  - type: table
+    name: inbox delete
+    order:
+      - file.name
+      - status
+      - tags
+      - up
+      - file.tags
+      - type
+      - related
+      - file.folder
+      - file.ctime
+    sort:
+      - property: tags
+        direction: ASC
+      - property: file.ctime
+        direction: DESC
+    limit: 100
+    columnSize:
+      note.tags: 120
+  - type: table
+    name: ALL 2 2
+    order:
+      - file.name
+      - status
+      - tags
+      - up
+      - file.tags
+      - type
+      - related
+      - file.folder
+      - file.ctime
+    sort:
+      - property: file.ctime
+        direction: DESC
+    limit: 100
+    columnSize:
+      note.tags: 120
+  - type: table
+    name: Images
+    filters:
+      and:
+        - file.folder == "99-System/Images"
+    order:
+      - file.name
+      - file.size
+      - file.ctime
+    imageFit: contain
+    columnSize:
+      file.name: 398

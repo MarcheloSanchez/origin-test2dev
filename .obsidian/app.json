@@ -1,0 +1,23 @@
+{
+  "alwaysUpdateLinks": true,
+  "newFileLocation": "folder",
+  "newFileFolderPath": "00-Inbox",
+  "attachmentFolderPath": "99-System/Images",
+  "showInlineTitle": true,
+  "promptDelete": false,
+  "userIgnoreFilters": [
+    "06-Archive/"
+  ],
+  "pdfExportSettings": {
+    "pageSize": "Letter",
+    "landscape": false,
+    "margin": "0",
+    "downscalePercent": 100
+  },
+  "readableLineLength": true,
+  "showUnsupportedFiles": true,
+  "showLineNumber": true,
+  "rightToLeft": false,
+  "vimMode": false,
+  "propertiesInDocument": "hidden"
+}

@@ -1,0 +1,6 @@
+filters:
+  and:
+    - file.folder.contains("06-Archive")
+views:
+  - type: table
+    name: Table

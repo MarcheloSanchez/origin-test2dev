@@ -1,0 +1,1 @@
+<%* await tp.user.delete_empty_inbox({"folder":"+","dryRun":false}) %>

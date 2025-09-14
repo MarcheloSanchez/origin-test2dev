@@ -1,0 +1,6 @@
+/* Smaller headers for mobile screens */
+@media screen and (max-width: 768px) {
+  .markdown-preview-view h1 { font-size: 1.8em; }
+  .markdown-preview-view h2 { font-size: 1.5em; }
+  .markdown-preview-view h3 { font-size: 1.3em; }
+}

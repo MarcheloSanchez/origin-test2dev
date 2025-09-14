@@ -1,0 +1,12 @@
+/* Larger touch targets */
+.nav-file-title, .nav-folder-title {
+  padding: 8px 4px;
+  min-height: 44px; /* iOS recommended touch target */
+}
+
+/* Optimized image sizing */
+img {
+  max-height: 400px;
+  margin: 0 auto;
+  border-radius: 8px;
+}

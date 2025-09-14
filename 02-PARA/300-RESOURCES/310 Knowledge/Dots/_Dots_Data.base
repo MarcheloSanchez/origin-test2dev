@@ -1,0 +1,6 @@
+filters:
+  and:
+    - file.folder.contains("02-Dots")
+views:
+  - type: table
+    name: Table

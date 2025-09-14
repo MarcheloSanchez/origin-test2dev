@@ -1,0 +1,5 @@
+.dashboard.markdown-preview-view.is-readable-line-width .markdown-preview-section,
+.dashboard.markdown-preview-view.is-readable-line-width .markdown-preview-section > div {   
+   width: 100% !important;
+   max-width: 100% !important;
+ }

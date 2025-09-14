@@ -1,0 +1,16 @@
+filters:
+  and:
+    - file.path.contains("Sources")
+views:
+  - type: table
+    name: All sources
+    order:
+      - file.name
+      - file.ctime
+      - file.mtime
+      - file.tags
+      - Source
+      - source_type
+      - status
+      - tags
+      - type

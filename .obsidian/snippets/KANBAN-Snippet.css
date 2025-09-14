@@ -1,0 +1,11 @@
+:root, body, .view-content {
+  /* e.g. using "ff" instead of "00" made it a nice pink */
+  --kanban-color-1: #ff65d852;
+
+  --kanban-color-2: #f0040441;
+  --kanban-color-3: #fcb54f44;
+  --kanban-color-4: #97b82b49;
+  --kanban-color-5: #bb722d41;
+  --kanban-color-6: #d12e2e42;
+  --kanban-color-7: #8f36cb3f;
+}

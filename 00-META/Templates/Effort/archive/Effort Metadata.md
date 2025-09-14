@@ -1,0 +1,20 @@
+---
+title: 
+type: 
+status: 
+tags: 
+created: 
+modified: 
+related: 
+action_required: 
+capture_method: 
+completion_percentage: 
+deadline: 
+estimated_effort: 
+fileClass: Inbox, Effort
+next_actions: 
+priority: 
+processing_priority: 
+recurrence: 
+time_required: 
+---
