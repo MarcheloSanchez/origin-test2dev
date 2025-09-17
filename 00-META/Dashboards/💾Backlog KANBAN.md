@@ -24,7 +24,6 @@ kanban-plugin: board
 	review_next: 2025-09-20
 - [ ] Apply [[in x up x see_also]]
 - [ ] Delete:
-	- [x] Status tags
 	- [ ] MOC - linked_notes_count (Can be computed OR show backlinks)
 	- [ ] modified - file.mtime exists
 - [ ] [[Longevity research prompt]]
