@@ -52,7 +52,6 @@ Origin-Data - For now Data migration targeted on some vault. Example Origin-Data
 - Peer review by Zůza. Maximum focus attention madness for sure. 
 	- Came out note of the templates work 
 	- Templater smashed multiple scripts 
-		- [x] Fixed them
 - Created structure for future templates, [Add, Capture, Meta]
 ---
 # 11/08/25

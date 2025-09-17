@@ -63,7 +63,6 @@ Obsidian recognizes the following file formats:
     - Unordered nested list item
 
 6. Check List
-- [X] First
 - [ ] Second
 - [-] Third
 - [ 50% ] FFF

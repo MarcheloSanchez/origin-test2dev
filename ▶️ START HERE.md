@@ -36,11 +36,6 @@ git clone https://github.com/yourusername/origin-vault.git
 > **⚠️ Důležité**: Origin vyžaduje tyto pluginy pro plnou funkcionalnost
 
 **Essential pluginy** (musí být aktivní):
-- [x] **Templater** - automatizace a šablony
-- [x] **Dataview** - dynamické přehledy  
-- [x] **Tasks** - task management
-- [x] **Plugin Update Tracker** - pro sledování změn
-
 **Jak aktivovat**:
 1. `Ctrl+,` → Settings
 2. Community Plugins → Browse

@@ -4,17 +4,10 @@ Praktický checklist pro nasazení workflow procesů
 ## 📋 Přípravná fáze (Týden 1)
 
 ### Setup dokumentace
-- [x] Vytvořit `99-System/Backlog.md` s metadata schema
-- [x] Aktualizovat `99-System/CHANGELOG.md` s verzovacím formátem
-- [x] Upravit `README.md` Roadmap sekci (Planned/In Progress/Completed)
 - [ ] Přidat `.gitignore` template pro Test vault
 
 ### Metadata standardizace
-- [x] Definovat univerzální YAML schema pro všechny .md soubory - [[VALUES of Metadata]]
 - [ ] Vytvořit Templater skripty pro automatické metadata
-- [x] Nastavit konzistentní tag struktur (`#📥inbox`, `#🔄active`, `#✅completed`)
-- [x] Implementovat Auto Note Mover rules pro tag-based sorting
-
 ### Workflow dokumentace
 - [ ] Vytvořit `99-System/Workflow-Guide.md` (kompletní implementační pokyny)
 - [ ] Vytvořit `99-System/Process-Checklist.md` (tento soubor)
