@@ -85,6 +85,34 @@ Generates a `Plugin Name | ID | Version` table saved to the configured output pa
 ```
 The script rebuilds the YAML block by ordering the base keys first, then appending any remaining keys alphabetically. It replaces the entire frontmatter/body content in the active file.【F:99-System/Scripts/promptTitle.js†L20-L73】
 
+### `rename_attachments.js`
+- **Purpose**: Renames embedded attachments so every note references files matching `<slugified-note-title>-<index>.<ext>`.【F:99-System/Scripts/rename_attachments.js†L3-L76】【F:99-System/Scripts/rename_attachments.js†L167-L213】
+- **Works with**: QuickAdd and Templater user scripts, or execution from the developer console with a JSON argument object.【F:99-System/Scripts/rename_attachments.js†L19-L38】
+
+| Argument | Type | Default | Description |
+| --- | --- | --- | --- |
+| `path` | string | – | Restrict the run to a single note (vault-relative path). The helper resolves `.md` automatically.【F:99-System/Scripts/rename_attachments.js†L40-L78】 |
+| `folder` | string | – | Limit scanning to notes inside the given folder. Accepts relative paths with forward slashes.【F:99-System/Scripts/rename_attachments.js†L69-L104】 |
+| `active` | boolean | `false` | When `true`, process only the currently active note, ignoring `path`/`folder`.【F:99-System/Scripts/rename_attachments.js†L31-L74】 |
+| `dryRun` | boolean | `false` | Logs the planned renames without touching files; still reports counts and notices.【F:99-System/Scripts/rename_attachments.js†L25-L30】【F:99-System/Scripts/rename_attachments.js†L187-L205】 |
+| `verifyDelay` | number | `120` | Milliseconds to wait before confirming the note text references the renamed attachments.【F:99-System/Scripts/rename_attachments.js†L32-L35】【F:99-System/Scripts/rename_attachments.js†L209-L223】 |
+
+**QuickAdd syntax**
+```json
+{"folder":"02-PARA/200-AREAS","dryRun":true,"verifyDelay":60}
+```
+
+**Templater syntax**
+```templater
+<%* await tp.user.rename_attachments({ active: true }) %>
+```
+
+**Behaviour**
+1. Collects target notes using `path`, `folder`, or `active` filters (vault by default).【F:99-System/Scripts/rename_attachments.js†L69-L122】
+2. Reads `cache.embeds` for each note, ignoring Markdown embeds and deduplicating attachments.【F:99-System/Scripts/rename_attachments.js†L126-L170】
+3. Builds sequential slug-based filenames and renames the underlying files, skipping conflicts and dry-run entries.【F:99-System/Scripts/rename_attachments.js†L171-L209】
+4. Waits `verifyDelay` milliseconds, re-opens the note content, and logs attachments whose references failed to update.【F:99-System/Scripts/rename_attachments.js†L209-L225】
+
 ### `toggle_focus_mode.js`
 - **Purpose**: Toggles a distraction-free layout by collapsing sidebars, hiding UI chrome, and enforcing a readable width.【F:99-System/Scripts/toggle_focus_mode.js†L8-L108】
 - **Works with**: QuickAdd user scripts or custom command palette scripts (runs in the Obsidian renderer context).【F:99-System/Scripts/toggle_focus_mode.js†L1-L7】【F:99-System/Scripts/toggle_focus_mode.js†L8-L108】
