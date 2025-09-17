@@ -5,6 +5,15 @@
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * Find the nearest ancestor directory (including startDir) that appears to be the vault root.
+ *
+ * Walks upward from startDir until it finds a directory containing either a `.git` or `.obsidian` entry;
+ * if none is found before reaching the filesystem root, returns the original startDir.
+ *
+ * @param {string} startDir - Path to start searching from.
+ * @returns {string} The detected vault root directory, or startDir if no root marker is found.
+ */
 function findVaultRoot(startDir) {
   let current = startDir;
   while (true) {
@@ -22,6 +31,21 @@ function findVaultRoot(startDir) {
   }
 }
 
+/**
+ * Determine the vault's attachment directory (absolute and POSIX-relative) using .obsidian/app.json if present.
+ *
+ * Reads rootDir/.obsidian/app.json and, when it contains a non-empty string property `attachmentFolderPath`, uses
+ * that value as the attachment folder relative path. Falls back to '99-System/Images' if the config is missing or
+ * the property is empty. Normalizes backslashes to forward slashes and strips trailing slashes, then resolves an
+ * absolute path against `rootDir`.
+ *
+ * Note: If app.json exists but cannot be parsed, a warning is emitted and the default is used. This function does
+ * not throw for parse errors.
+ *
+ * @param {string} rootDir - Filesystem path to the vault root used as the base for resolving the attachment folder.
+ * @return {{ absolute: string, relative: string }} Object with `absolute` (resolved absolute path) and `relative`
+ * path (POSIX-style path relative to `rootDir`).
+ */
 function loadAttachmentDirectory(rootDir) {
   const configPath = path.join(rootDir, '.obsidian', 'app.json');
   let attachmentRelative = '99-System/Images';
@@ -51,6 +75,19 @@ function loadAttachmentDirectory(rootDir) {
   };
 }
 
+/**
+ * Recursively scan a directory and index all files as attachments.
+ *
+ * Traverses `dir` depth-first, skipping dotfiles and `.`/`..`. For each file found it:
+ * - computes its POSIX-style path relative to `rootDir` and adds an entry to `attachments`
+ *   with value `false` (meaning "not yet referenced"),
+ * - records the file under its basename in `baseNameMap` (basename -> array of relative paths).
+ *
+ * @param {string} dir - Directory to scan.
+ * @param {string} rootDir - Vault root used to compute relative POSIX paths.
+ * @param {Map<string, boolean>} attachments - Map that will be populated with relative path -> referenced flag.
+ * @param {Map<string, string[]>} baseNameMap - Map that will be populated with basename -> list of relative paths.
+ */
 function collectAttachments(dir, rootDir, attachments, baseNameMap) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
@@ -77,6 +114,20 @@ function collectAttachments(dir, rootDir, attachments, baseNameMap) {
   }
 }
 
+/**
+ * Recursively traverses a directory tree and invokes a collector for each Markdown file found.
+ *
+ * Traversal is depth-first. Hidden directories (names starting with '.'), entries listed in
+ * ignoreDirs, and the attachmentsDir (and its descendants) are skipped. For each file whose
+ * name ends with '.md' (case-insensitive), the collector is called with the file's full path.
+ *
+ * @param {string} dir - The directory to traverse.
+ * @param {string} rootDir - The repository/vault root used to compute relative paths for filtering.
+ * @param {Set<string>} ignoreDirs - Directory names (not paths) to skip during traversal.
+ * @param {string} attachmentsDir - Relative POSIX-style path of the attachments directory (from rootDir)
+ *   which should not be descended into; may be empty or falsy to disable this filter.
+ * @param {(filePath: string) => void} collector - Called for each discovered Markdown file with its full path.
+ */
 function walkMarkdownFiles(dir, rootDir, ignoreDirs, attachmentsDir, collector) {
   const entries = fs.readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
@@ -113,6 +164,17 @@ function walkMarkdownFiles(dir, rootDir, ignoreDirs, attachmentsDir, collector) 
   }
 }
 
+/**
+ * Mark all attachments that share the given base filename as referenced.
+ *
+ * Looks up `baseName` in `baseNameMap` and sets the corresponding entries in
+ * `attachments` to `true` for every matching relative path.
+ *
+ * @param {string} baseName - Filename with extension (e.g., "image.png"); must include a dot.
+ * @param {Map<string, boolean>} attachments - Map from attachment relative POSIX path to a boolean indicating whether it's referenced; entries found will be set to `true`.
+ * @param {Map<string, string[]>} baseNameMap - Map from a basename to an array of relative POSIX paths that share that basename.
+ * @return {boolean} True if one or more attachments were marked; false if no matches were found or `baseName` was invalid.
+ */
 function markBaseName(baseName, attachments, baseNameMap) {
   if (!baseName || !baseName.includes('.')) {
     return false;
@@ -127,6 +189,19 @@ function markBaseName(baseName, attachments, baseNameMap) {
   return true;
 }
 
+/**
+ * Mark an attachment as referenced by resolving a provided relative path against the known attachments.
+ *
+ * Normalizes the given path (converts backslashes to slashes, removes leading `./` or `/`, strips query
+ * and fragment parts, and POSIX-normalizes), then checks for a matching key in the attachments map.
+ * Also considers the same path prefixed with `attachmentsDir` (if provided) as an additional candidate.
+ * When a match is found, the corresponding entry in `attachments` is set to `true`.
+ *
+ * @param {string} relPath - The raw relative path extracted from a link or embed.
+ * @param {Map<string, boolean>} attachments - Map of attachment relative POSIX paths -> referenced flag; entries will be updated to `true` when matched.
+ * @param {string} [attachmentsDir] - Relative POSIX path to the attachments directory (e.g. "99-System/Images"); used to form an additional candidate when the normalized path is not already within this directory.
+ * @returns {boolean} True if one or more attachment entries were marked as referenced; otherwise false.
+ */
 function markRelativePath(relPath, attachments, attachmentsDir) {
   if (!relPath) {
     return false;
@@ -160,6 +235,18 @@ function markRelativePath(relPath, attachments, attachmentsDir) {
   return marked;
 }
 
+/**
+ * Process a wikilink target and mark any referenced attachment(s) as used.
+ *
+ * Cleans the raw wikilink target by removing aliases (`|...`) and anchors/fragments (`#...`),
+ * normalizes path separators to POSIX (`/`), and then attempts to mark a matching attachment:
+ * first by the cleaned relative path, then (if that fails) by the file's base name.
+ *
+ * @param {string} rawTarget - The raw wikilink target text (e.g. `Notes/Image.png|caption` or `Folder/Image.png#section`).
+ * @param {Map<string, boolean>} attachments - Map of attachment relative POSIX paths -> referenced flag; entries will be set to `true` when matched.
+ * @param {Map<string, string[]>} baseNameMap - Map from a file base name to an array of matching relative paths; used for basename fallback matches.
+ * @param {string} attachmentsDir - The attachments directory relative path (POSIX-style) used when resolving relative-path candidates.
+ */
 function handleWikilink(rawTarget, attachments, baseNameMap, attachmentsDir) {
   if (!rawTarget) {
     return;
@@ -176,6 +263,22 @@ function handleWikilink(rawTarget, attachments, baseNameMap, attachmentsDir) {
   }
 }
 
+/**
+ * Process a Markdown link target and mark any matching attachment(s) as referenced.
+ *
+ * Cleans and normalizes the link target (removes angle brackets, trailing anchors/queries, and quotes),
+ * ignores external URLs (schemes like `http:`), and attempts to mark matching attachments by:
+ * 1. Interpreting the target as a direct relative path (normalized to POSIX slashes).
+ * 2. Resolving the target relative to the source Markdown file and marking that path if it lies within the vault root.
+ * 3. Falling back to matching by the target's basename against the base-name index.
+ *
+ * @param {string} rawTarget - The raw target string extracted from a Markdown link/image (e.g., the `(url)` part).
+ * @param {string} sourcePath - Absolute path to the Markdown file that contains the link; used to resolve relative targets.
+ * @param {string} rootDir - Absolute vault root directory; used to determine resolved-relative attachment paths.
+ * @param {Map<string,boolean>} attachments - Map of attachment relative POSIX paths -> referenced flag; entries are marked true when found.
+ * @param {Map<string,string[]>} baseNameMap - Map from filename base (e.g., `image.png`) to arrays of attachment relative paths for basename lookups.
+ * @param {string} attachmentsDir - Relative POSIX path to the attachments directory (used as an additional candidate prefix).
+ */
 function handleMarkdownLink(rawTarget, sourcePath, rootDir, attachments, baseNameMap, attachmentsDir) {
   if (!rawTarget) {
     return;
@@ -223,6 +326,20 @@ function handleMarkdownLink(rawTarget, sourcePath, rootDir, attachments, baseNam
   markBaseName(baseName, attachments, baseNameMap);
 }
 
+/**
+ * Scan the vault for attachments, mark those referenced from Markdown files, and report orphaned attachments.
+ *
+ * Traverses the vault to locate the attachment folder, builds an index of all files in that folder (and a basename index),
+ * scans Markdown files for wikilinks, embedded links, and Markdown image links to mark referenced attachments, then prints
+ * a summary with total, referenced, and orphaned attachment counts and a sorted list of orphaned paths.
+ *
+ * Side effects:
+ * - Writes status and results to the console.
+ * - Sets process.exitCode = 1 and returns early if the attachment directory does not exist or is not a directory.
+ *
+ * Notes:
+ * - Files that cannot be read while scanning Markdown files emit a warning but do not stop the scan.
+ */
 function main() {
   const scriptDir = __dirname;
   const rootDir = findVaultRoot(scriptDir);
