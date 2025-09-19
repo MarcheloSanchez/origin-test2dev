@@ -45,6 +45,16 @@ module.exports = async (rawArgs) => {
       .replace(/\/+$/, "");
   };
 
+  const escapeRegExp = (value) => {
+    if (!value) return "";
+    const specials = new Set(["\\", "^", "$", "*", "+", "?", ".", "(", ")", "|", "{", "}", "[", "]", "-", "/"]);
+    let output = "";
+    for (const char of value) {
+      output += specials.has(char) ? `\\${char}` : char;
+    }
+    return output;
+  };
+
   const slugify = (input) => {
     if (!input) return "";
     return input
@@ -149,6 +159,8 @@ module.exports = async (rawArgs) => {
       const folderPath = attachment.parent?.path || "";
       const prefix = folderPath ? `${folderPath}/` : "";
       const ext = attachment.extension ? `.${attachment.extension}` : "";
+      const oldPath = attachment.path;
+      const oldName = attachment.name || oldPath.split("/").pop() || oldPath;
 
       let newPath = attachment.path;
       let newName = attachment.name || attachment.path.split("/").pop();
@@ -175,7 +187,7 @@ module.exports = async (rawArgs) => {
         break;
       }
 
-      plan.push({ attachment, newPath, newName, changed });
+      plan.push({ attachment, newPath, newName, changed, oldPath, oldName });
     }
 
     const changedEntries = plan.filter(p => p.changed);
@@ -194,8 +206,9 @@ module.exports = async (rawArgs) => {
       continue;
     }
 
+    const successfulRenames = [];
     for (const step of changedEntries) {
-      const oldPath = step.attachment.path;
+      const oldPath = step.oldPath;
       try {
         await app.fileManager.renameFile(step.attachment, step.newPath);
         const exists = await app.vault.adapter.exists(step.newPath);
@@ -204,23 +217,87 @@ module.exports = async (rawArgs) => {
         } else {
           console.log(`[rename_attachments] ${oldPath} -> ${step.newPath}`);
           stats.renamed += 1;
+          successfulRenames.push({ ...step });
         }
       } catch (err) {
         console.error(`[rename_attachments] Failed to rename ${oldPath}:`, err);
       }
     }
 
-    if (changedEntries.length) {
-      await waitFor(verifyDelay);
-      try {
-        const content = await app.vault.read(note);
-        const missing = changedEntries.filter(p => !content.includes(p.newName));
-        if (missing.length) {
-          console.warn(`[rename_attachments] ${note.path}: unable to verify references for ${missing.map(m => m.newName).join(", ")}`);
+    if (!successfulRenames.length) {
+      continue;
+    }
+
+    const applyReferenceUpdates = (input, rename) => {
+      let output = input;
+      let touched = false;
+      const dedupeTargets = new Set();
+
+      const buildReplacementEntries = (oldTarget, newTarget) => {
+        if (!oldTarget || !newTarget || oldTarget === newTarget) return [];
+        const key = `${oldTarget}→${newTarget}`;
+        if (dedupeTargets.has(key)) return [];
+        dedupeTargets.add(key);
+        const escaped = escapeRegExp(oldTarget);
+        return [
+          {
+            pattern: new RegExp(`(!?\\[\\[[^\\]]*?)${escaped}(?=([^\\]]*)\\]\])`, "g"),
+            replacement: `$1${newTarget}`,
+          },
+          {
+            pattern: new RegExp(`(!?\\[[^\\]]*\\]\()${escaped}(?=\))`, "g"),
+            replacement: `$1${newTarget}`,
+          },
+          {
+            pattern: new RegExp(`(<img\\s+[^>]*src=["'])${escaped}(?=["'])`, "gi"),
+            replacement: `$1${newTarget}`,
+          },
+        ];
+      };
+
+      const replacements = [
+        ...buildReplacementEntries(rename.oldPath, rename.newPath),
+        ...buildReplacementEntries(rename.oldName, rename.newName),
+      ];
+
+      for (const entry of replacements) {
+        const next = output.replace(entry.pattern, entry.replacement);
+        if (next !== output) {
+          output = next;
+          touched = true;
         }
-      } catch (err) {
-        console.warn(`[rename_attachments] Could not verify note ${note.path}:`, err);
       }
+
+      return { output, touched };
+    };
+
+    await waitFor(verifyDelay);
+    try {
+      const originalContent = await app.vault.read(note);
+      let updatedContent = originalContent;
+      let contentChanged = false;
+
+      for (const rename of successfulRenames) {
+        const { output, touched } = applyReferenceUpdates(updatedContent, rename);
+        if (touched) {
+          updatedContent = output;
+          contentChanged = true;
+        }
+      }
+
+      if (contentChanged && updatedContent !== originalContent) {
+        await app.vault.modify(note, updatedContent);
+        console.info(`[rename_attachments] ${note.path}: refreshed attachment references.`);
+        await waitFor(verifyDelay);
+      }
+
+      const finalContent = contentChanged ? updatedContent : originalContent;
+      const missing = successfulRenames.filter(p => !finalContent.includes(p.newName));
+      if (missing.length) {
+        console.warn(`[rename_attachments] ${note.path}: unable to verify references for ${missing.map(m => m.newName).join(", ")}`);
+      }
+    } catch (err) {
+      console.warn(`[rename_attachments] Could not verify note ${note.path}:`, err);
     }
   }
 
