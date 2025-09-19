@@ -59,7 +59,8 @@ const analyzeFrontmatter = async (filePath) => {
     }
 
     const missing = REQUIRED_KEYS.filter((key) => {
-      const pattern = new RegExp(`^\n?\s*${escapeRegex(key)}\s*:`, "m");
+      // Match: start of line, optional spaces, the key, then colon
+      const pattern = new RegExp(`^\\s*${escapeRegex(key)}\\s*:`, "m");
       return !pattern.test(frontmatter);
     });
 
