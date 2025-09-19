@@ -165,28 +165,33 @@ module.exports = async () => {
       };
     }
 
-    const normalizedOrdered = entries.map((entry) => {
-      const normalizedBase = entry.base.toLowerCase();
-      return entry.wrapWiki ? `[[${normalizedBase}]]` : normalizedBase;
-    });
+    // Normalize to pairs and keep wrapper intent
+    const normalizedPairs = entries.map((entry) => ({
+      base: entry.base.toLowerCase(),
+      wrapWiki: entry.wrapWiki,
+    }));
 
-    const sorted = [...normalizedOrdered].sort((a, b) => a.localeCompare(b));
-    const seen = new Set();
-    const deduped = [];
-    sorted.forEach((tag) => {
-      if (seen.has(tag)) {
-        return;
-      }
-      seen.add(tag);
-      deduped.push(tag);
-    });
+    // Build ordered (original order) representation for change detection
+    const normalizedOrdered = normalizedPairs.map(({ base, wrapWiki }) =>
+      wrapWiki ? `[[${base}]]` : base
+    );
+
+    // Dedup by base; if any variant is wiki-linked, keep wiki-linked
+    const byBase = new Map(); // base -> { wrapWiki: boolean }
+    for (const { base, wrapWiki } of normalizedPairs) {
+      const prev = byBase.get(base);
+      byBase.set(base, { wrapWiki: Boolean(prev?.wrapWiki || wrapWiki) });
+    }
+    const normalizedSortedUnique = Array.from(byBase.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([base, { wrapWiki }]) => (wrapWiki ? `[[${base}]]` : base));
 
     const needsLowercase = entries.some((entry) => entry.base !== entry.base.toLowerCase());
-    const needsSortingOrDedup = !arraysEqual(normalizedOrdered, deduped);
+    const needsSortingOrDedup = !arraysEqual(normalizedOrdered, normalizedSortedUnique);
 
     return {
       normalizedOrdered,
-      normalizedSortedUnique: deduped,
+      normalizedSortedUnique,
       needsLowercase,
       needsSortingOrDedup,
     };
